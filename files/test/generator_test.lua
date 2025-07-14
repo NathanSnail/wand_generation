@@ -27,4 +27,22 @@ test.test({
 			test.eq(sequence:generate(), { 1, 2, 1, 2 })
 		end,
 	},
+	{
+		name = "Choice",
+		body = function()
+			local choice = gen.terminal(1)(1) + gen.terminal(2)(1)
+			test.rng.testing_rng = { 0.1 } -- we roll low so the first should part
+			test.eq(choice:generate(), { 1 })
+		end,
+	},
+	{
+		name = "Chained Choices",
+		body = function()
+			local choice = gen.terminal(1)(1) + gen.terminal(2)(1) + gen.terminal(3)(1)
+			-- if this isn't chained right, we'd out of bounds as we run out of rng values
+			-- if this is chained right, we get the middle element
+			test.rng.testing_rng = { 0.5 }
+			test.eq(choice:generate(), { 2 })
+		end,
+	},
 })
