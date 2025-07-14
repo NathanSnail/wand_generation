@@ -1,4 +1,4 @@
-local ansi = require("files.lib.ansi")
+local ansi = require "files.lib.ansi"
 
 local FAIL = ansi.RED_FG .. ansi.BOLD
 local PASS = ansi.GREEN_FG .. ansi.BOLD
@@ -11,7 +11,7 @@ local M = {
 	passed = true,
 	---@type string[]
 	errors = {},
-	rng = require("files.lib.random"),
+	rng = require "files.lib.random",
 }
 
 ---@class (exact) tests.test
