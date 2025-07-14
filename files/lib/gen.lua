@@ -223,7 +223,7 @@ end
 ---@param p number the probability generator is used
 ---@param generator gen.Generator
 function M.optional(p, generator)
-	return M.terminal()(1 - p) + M.wrap(generator)(p)
+	return M.wrap(M.terminal()(1 - p) + M.wrap(generator)(p))
 end
 
 return M

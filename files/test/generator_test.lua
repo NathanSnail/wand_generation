@@ -94,4 +94,11 @@ test.test({
 			test.eq(optional:generate(), { 1 })
 		end,
 	},
+	{
+		name = "Optional Calling",
+		body = function()
+			-- if we didn't wrap the optional then we couldn't call it for choice construction
+			gen.optional(0.5, gen.terminal(1))(1)
+		end,
+	},
 })
