@@ -219,4 +219,11 @@ function M.cyclic()
 	return setmetatable({ kind = "gen.CylicGenerator" }, cyclic_mt)
 end
 
+---This will either generate `generator:generate()` or `{}`.
+---@param p number the probability generator is used
+---@param generator gen.Generator
+function M.optional(p, generator)
+	return M.terminal()(1 - p) + M.wrap(generator)(p)
+end
+
 return M
