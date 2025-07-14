@@ -74,4 +74,24 @@ test.test({
 			test.eq(cyclic:generate(), { 1, 1, 1 })
 		end,
 	},
+	{
+		name = "Optional",
+		body = function()
+			local optional = gen.optional(0.5, gen.terminal(1))
+			test.rng.testing_rng = { 0.8, 0.1 }
+			-- 0.8 is that something happens (optional generates)
+			test.eq(optional:generate(), { 1 })
+			test.eq(optional:generate(), {})
+		end,
+	},
+	{
+		name = "Optional Choice",
+		body = function()
+			local optional = gen.optional(0.5, gen.terminal(1)(1) + gen.terminal(2)(1))
+			-- if we failed to wrap correctly this would be last item
+			-- if we wrap correctly this will be something happens, first item
+			test.rng.testing_rng = { 0.8, 0.1 }
+			test.eq(optional:generate(), { 1 })
+		end,
+	},
 })
