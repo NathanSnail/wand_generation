@@ -226,4 +226,26 @@ function M.optional(p, generator)
 	return M.wrap(M.terminal()(1 - p) + M.wrap(generator)(p))
 end
 
+---Has a probability p of generating and then calculating again, always does at least 1 generation
+---This means that if p = 0.5 you have a 50% chance of 1, 25% of 2, ...
+---@param p number
+---@param generator gen.Generator
+---@return gen.SequenceGenerator
+function M.repeated1(p, generator)
+	local cyclic = M.cyclic()
+	cyclic:set(generator * M.optional(p, cyclic))
+	---@diagnostic disable-next-line: cast-type-mismatch
+	---@cast cyclic gen.SequenceGenerator
+	return cyclic
+end
+
+---Like `repeated1` except it doesn't always generate 1, has a probability p of generating again
+---This means that if p = 0.5 you have a 50% change of 0, 25% of 1, ...
+---@param p number
+---@param generator gen.Generator
+---@return gen.Generator
+function M.repeated(p, generator)
+	return M.optional(p, M.repeated1(p, generator))
+end
+
 return M
