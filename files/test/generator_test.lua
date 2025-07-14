@@ -1,7 +1,7 @@
-local test = require("files.test.test")
+local test = require "files.test.test"
 -- test sets the TESTING global so it goes first
 
-local gen = require("files.lib.gen")
+local gen = require "files.lib.gen"
 
 test.test({
 	{
