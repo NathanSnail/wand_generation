@@ -101,4 +101,12 @@ test.test({
 			gen.optional(0.5, gen.terminal(1))(1)
 		end,
 	},
+	{
+		name = "Repeated Values",
+		body = function()
+			local repeated = gen.repeated(0.5, gen.terminal(1))
+			test.rng.testing_rng = { 0.9, 0.9, 0.1 }
+			test.eq(repeated:generate(), { 1, 1 })
+		end,
+	},
 })
