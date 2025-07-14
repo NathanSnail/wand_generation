@@ -55,4 +55,23 @@ test.test({
 			test.eq(choice:generate(), { 2 })
 		end,
 	},
+	{
+		name = "Cyclic Value",
+		body = function()
+			local cyclic = gen.cyclic()
+			cyclic:set(gen.terminal(1))
+			test.eq(cyclic:generate(), { 1 })
+		end,
+	},
+	{
+		name = "Cyclic Graph",
+		body = function()
+			local cyclic = gen.cyclic()
+			local one = gen.terminal(1)
+			cyclic:set(one(2) + (cyclic * cyclic)(1))
+			-- should expand to (1, (1, 1))
+			test.rng.testing_rng = { 0.9, 0.1, 0.9, 0.1, 0.1 }
+			test.eq(cyclic:generate(), { 1, 1, 1 })
+		end,
+	},
 })

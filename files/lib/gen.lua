@@ -10,7 +10,7 @@ local rng = require "files.lib.random"
 ---@operator mul(gen.Generator): gen.SequenceGenerator
 
 ---@class gen.TerminalGenerator: gen.Generator
----@field terminal any
+---@field terminal any[]
 ---@field kind "gen.TerminalGenerator"
 
 ---@class gen.SequenceGenerator: gen.Generator
@@ -26,6 +26,10 @@ local rng = require "files.lib.random"
 ---@class gen.WrappedGenerator: gen.Generator
 ---@field generator gen.Generator
 ---@field kind "gen.WrappedGenerator"
+
+---@class gen.CyclicGenerator: gen.Generator
+---@field set fun(self, value: gen.Generator) erases the cyclic nature of the generator and makes it act as if it was value
+---@field kind "gen.CyclicGenerator"
 
 ---@class gen.ParameterisedGenerator
 ---@field generator gen.Generator
@@ -111,7 +115,7 @@ local terminal_mt = merge({
 		---@param self gen.TerminalGenerator
 		---@return any[]
 		generate = function(self)
-			return { self.terminal }
+			return self.terminal
 		end,
 	},
 }, generator_mt)
@@ -165,10 +169,32 @@ local wrapped_mt = merge({
 	},
 }, generator_mt)
 
----@param el any
+local cyclic_mt = merge({
+	__index = {
+		---@param self gen.CyclicGenerator
+		---@return any[]
+		generate = function(self)
+			error(
+				"gen.CyclicGenerator cannot generate, it must be set at some point to erase the cyclic generator."
+			)
+		end,
+		---@param self gen.CyclicGenerator
+		---@param value gen.Generator
+		set = function(self, value)
+			self.kind = nil
+			for k, v in pairs(value) do
+				self[k] = v
+			end
+			setmetatable(self, getmetatable(value))
+		end,
+	},
+}, generator_mt)
+
+---The generator just returns a table containing
+---@param ...any
 ---@return gen.TerminalGenerator
-function M.terminal(el)
-	return setmetatable({ terminal = el, kind = "gen.TerminalGenerator" }, terminal_mt)
+function M.terminal(...)
+	return setmetatable({ terminal = { ... }, kind = "gen.TerminalGenerator" }, terminal_mt)
 end
 
 ---This lets you nest choices, so (a | b) | c rather than a | b | c
@@ -177,6 +203,20 @@ end
 ---@return gen.WrappedGenerator
 function M.wrap(generator)
 	return setmetatable({ generator = generator, kind = "gen.WrappedGenerator" }, wrapped_mt)
+end
+
+---This lets you create cycles in the generation graph.
+---Call `:set(value)` to erase the cyclic generator and make it act as if it were `value`
+---Example:
+---```lua
+---local cyclic = gen.cyclic()
+---local one = gen.terminal(1)
+---cyclic.set(one(2) + (cyclic * cyclic)(1))
+---for _, v in cyclic:generate() do print(v) end
+---```
+---@return gen.CyclicGenerator
+function M.cyclic()
+	return setmetatable({ kind = "gen.CylicGenerator" }, cyclic_mt)
 end
 
 return M
