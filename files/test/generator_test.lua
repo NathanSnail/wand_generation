@@ -45,4 +45,14 @@ test.test({
 			test.eq(choice:generate(), { 2 })
 		end,
 	},
+	{
+		name = "Wrapped Choices",
+		body = function()
+			local choice = gen.wrap(gen.terminal(1)(1) + gen.terminal(2)(1))(1) + gen.terminal(3)(1)
+			-- if this isn't chained right, we'd get 1 as the weight is low
+			-- if this is chained right, we go low (first group) then high (2)
+			test.rng.testing_rng = { 0.1, 0.9 }
+			test.eq(choice:generate(), { 2 })
+		end,
+	},
 })

@@ -23,6 +23,10 @@ local rng = require("files.lib.random")
 ---@field kind "gen.ChoiceGenerator"
 ---@operator add(gen.ParameterisedGenerator | gen.ChoiceGenerator): gen.ChoiceGenerator
 
+---@class gen.WrappedGenerator: gen.Generator
+---@field generator gen.Generator
+---@field kind "gen.WrappedGenerator"
+
 ---@class gen.ParameterisedGenerator
 ---@field generator gen.Generator
 ---@field weight number
@@ -151,10 +155,28 @@ choice_mt = merge({
 	},
 }, generator_mt)
 
+local wrapped_mt = merge({
+	__index = {
+		---@param self gen.WrappedGenerator
+		---@return any[]
+		generate = function(self)
+			return self.generator:generate()
+		end,
+	},
+}, generator_mt)
+
 ---@param el any
 ---@return gen.TerminalGenerator
 function M.terminal(el)
 	return setmetatable({ terminal = el, kind = "gen.TerminalGenerator" }, terminal_mt)
+end
+
+---This lets you nest choices, so (a | b) | c rather than a | b | c
+---This is useful for more complex weight behaviours so that the choices are made seperately
+---@param generator gen.Generator
+---@return gen.WrappedGenerator
+function M.wrap(generator)
+	return setmetatable({ generator = generator, kind = "gen.WrappedGenerator" }, wrapped_mt)
 end
 
 return M
