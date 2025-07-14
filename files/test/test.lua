@@ -11,6 +11,7 @@ local M = {
 	passed = true,
 	---@type string[]
 	errors = {},
+	rng = require("files.lib.random"),
 }
 
 ---@class (exact) tests.test
@@ -91,11 +92,11 @@ end
 ---@param tests tests.test[]
 function M.test(tests)
 	local num_passed = 0
-	---@class Fail
+	---@class test.Fail
 	---@field number integer
 	---@field name string
 
-	---@type Fail[]
+	---@type test.Fail[]
 	local failed = {}
 	for test_num, test in ipairs(tests) do
 		M.passed = true
