@@ -1,7 +1,7 @@
 ---@class gen
 local M = {}
 
-local rng = require "files.lib.random"
+local rng = require "lib.random"
 
 ---@class gen.Generator
 ---@field kind string
