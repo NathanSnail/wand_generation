@@ -1,4 +1,4 @@
-local test = require "files.test.test"
+local test = require "test.test"
 
 test.test({
 	{
