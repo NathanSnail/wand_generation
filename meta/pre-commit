@@ -1,0 +1,11 @@
+#!/bin/bash
+
+repo_root=$(git rev-parse --show-toplevel)
+"$repo_root/meta/check.sh"
+
+if [ $? -eq 1 ]; then
+  echo "❌ Commit aborted: check.sh failed"
+  exit 1
+fi
+
+exit 0
